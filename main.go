@@ -27,19 +27,24 @@ func main() {
 	}
 
 	if len(os.Args) > 1 && os.Args[1] == "--uninstall" {
+		fmt.Println("Uninstalling markdown-generator MCP server...")
+
+		fmt.Println("  Removing MCP registration from Claude Code...")
 		cmd := exec.Command("claude", "mcp", "remove", "--scope", "user", "markdown-generator")
 		cmd.Stdin = os.Stdin
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 		if err := cmd.Run(); err != nil {
-			log.Fatalf("Unregistration failed: %v", err)
+			log.Fatalf("  Failed to remove MCP registration: %v\nMake sure Claude Code CLI is installed.", err)
 		}
+
+		fmt.Println("  Removing binary...")
 		self, _ := os.Executable()
 		if err := os.Remove(self); err != nil {
-			fmt.Printf("MCP server unregistered. Remove binary manually: rm %s\n", self)
-		} else {
-			fmt.Println("Uninstalled. Restart Claude Code.")
+			fmt.Printf("  Could not remove binary automatically. Run manually: rm %s\n", self)
 		}
+
+		fmt.Println("\nUninstalled successfully. Restart Claude Code.")
 		return
 	}
 	if err := mcpserver.Start(); err != nil {
