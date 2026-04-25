@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/aakashpandit/markdown-generator-mcp/internal/parser"
+	"github.com/Aakash-Pandit/markdown-generator-mcp/internal/parser"
 )
 
 func Write(content, title, outputDir, filename string) (string, error) {

@@ -8,7 +8,7 @@ if ! command -v go >/dev/null 2>&1; then
     exit 1
 fi
 
-go install github.com/aakashpandit/markdown-generator-mcp@latest
+go install github.com/Aakash-Pandit/markdown-generator-mcp@latest
 
 echo "Registering with Claude Code..."
 "$(go env GOPATH)/bin/mdgen-mcp" --install

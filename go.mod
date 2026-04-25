@@ -1,4 +1,4 @@
-module github.com/aakashpandit/markdown-generator-mcp
+module github.com/Aakash-Pandit/markdown-generator-mcp
 
 go 1.25.5
 

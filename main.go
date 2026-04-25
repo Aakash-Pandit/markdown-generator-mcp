@@ -6,7 +6,7 @@ import (
 	"os"
 	"os/exec"
 
-	"github.com/aakashpandit/markdown-generator-mcp/internal/mcpserver"
+	"github.com/Aakash-Pandit/markdown-generator-mcp/internal/mcpserver"
 )
 
 func main() {

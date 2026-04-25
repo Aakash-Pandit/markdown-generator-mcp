@@ -9,9 +9,9 @@ import (
 	"github.com/mark3labs/mcp-go/mcp"
 	"github.com/mark3labs/mcp-go/server"
 
-	"github.com/aakashpandit/markdown-generator-mcp/internal/formatter"
-	"github.com/aakashpandit/markdown-generator-mcp/internal/parser"
-	"github.com/aakashpandit/markdown-generator-mcp/internal/writer"
+	"github.com/Aakash-Pandit/markdown-generator-mcp/internal/formatter"
+	"github.com/Aakash-Pandit/markdown-generator-mcp/internal/parser"
+	"github.com/Aakash-Pandit/markdown-generator-mcp/internal/writer"
 )
 
 func Start() error {

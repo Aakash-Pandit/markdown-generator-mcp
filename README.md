@@ -9,7 +9,7 @@ Works with any source — Claude Code chats, Codex sessions, or any text you pas
 **Requires:** Go 1.21+, [Claude Code](https://claude.ai/code)
 
 ```sh
-curl -sSL https://raw.githubusercontent.com/aakashpandit/markdown-generator-mcp/main/install.sh | sh
+curl -sSL https://raw.githubusercontent.com/Aakash-Pandit/markdown-generator-mcp/main/install.sh | sh
 ```
 
 Restart Claude Code. Done.
