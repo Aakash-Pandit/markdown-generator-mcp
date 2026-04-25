@@ -11,4 +11,4 @@ fi
 go install github.com/Aakash-Pandit/markdown-generator-mcp@latest
 
 echo "Registering with Claude Code..."
-"$(go env GOPATH)/bin/mdgen-mcp" --install
+"$(go env GOPATH)/bin/markdown-generator-mcp" --install
