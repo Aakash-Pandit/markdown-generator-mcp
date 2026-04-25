@@ -37,7 +37,7 @@ Claude calls these automatically when you ask it to save something.
 ## Uninstall
 
 ```sh
-markdown-generator-mcp --uninstall
+curl -sSL https://raw.githubusercontent.com/Aakash-Pandit/markdown-generator-mcp/main/uninstall.sh | sh
 ```
 
-This removes the MCP registration from Claude Code and deletes the binary. Restart Claude Code after.
+Restart Claude Code after.
