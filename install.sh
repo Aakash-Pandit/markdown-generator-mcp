@@ -3,7 +3,7 @@ set -e
 
 REPO="Aakash-Pandit/markdown-generator-mcp"
 BINARY_NAME="markdown-generator-mcp"
-INSTALL_DIR="/usr/local/bin"
+INSTALL_DIR="$HOME/.local/bin"
 
 echo "Installing markdown-generator MCP server..."
 
@@ -45,13 +45,29 @@ URL="https://github.com/$REPO/releases/download/$LATEST/${BINARY_NAME}-${OS}-${A
 curl -sSfL "$URL" -o "/tmp/$BINARY_NAME"
 chmod +x "/tmp/$BINARY_NAME"
 
-# Install binary
-if [ -w "$INSTALL_DIR" ]; then
-  mv "/tmp/$BINARY_NAME" "$INSTALL_DIR/$BINARY_NAME"
-else
-  echo "  Requesting permission to install to $INSTALL_DIR..."
-  sudo mv "/tmp/$BINARY_NAME" "$INSTALL_DIR/$BINARY_NAME"
-fi
+# Install to ~/.local/bin (no sudo needed)
+mkdir -p "$INSTALL_DIR"
+mv "/tmp/$BINARY_NAME" "$INSTALL_DIR/$BINARY_NAME"
+
+# Add to PATH if not already there
+add_to_path() {
+  SHELL_RC=""
+  case "$SHELL" in
+    */zsh)  SHELL_RC="$HOME/.zshrc" ;;
+    */bash) SHELL_RC="$HOME/.bashrc" ;;
+  esac
+  if [ -n "$SHELL_RC" ] && ! grep -q "$INSTALL_DIR" "$SHELL_RC" 2>/dev/null; then
+    echo "" >> "$SHELL_RC"
+    echo "export PATH=\"\$HOME/.local/bin:\$PATH\"" >> "$SHELL_RC"
+    echo "  Added $INSTALL_DIR to PATH in $SHELL_RC"
+    echo "  Run: source $SHELL_RC"
+  fi
+}
+
+case ":$PATH:" in
+  *":$INSTALL_DIR:"*) ;;
+  *) add_to_path ;;
+esac
 
 echo "  Registering with Claude Code..."
 "$INSTALL_DIR/$BINARY_NAME" --install
