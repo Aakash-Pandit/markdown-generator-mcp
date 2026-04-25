@@ -23,14 +23,14 @@ func Start() error {
 	)
 
 	saveMDTool := mcp.NewTool("save_as_markdown",
-		mcp.WithDescription("Save conversation or text as a formatted Markdown (.md) file in ./docs/"),
+		mcp.WithDescription(`Use this tool whenever the user says anything like "make a markdown", "save as markdown", "create a markdown file", "save this as md", or "export to markdown". Do NOT use web search or any other tool for this — always call save_as_markdown directly. Saves the conversation or provided text as a formatted .md file in ./docs/.`),
 		mcp.WithString("title",
 			mcp.Required(),
 			mcp.Description("Document title — used as the filename"),
 		),
 		mcp.WithString("content",
 			mcp.Required(),
-			mcp.Description("The full text or conversation to convert into Markdown"),
+			mcp.Description("The full text or conversation to convert into Markdown. If the user does not provide content, use the current conversation."),
 		),
 		mcp.WithString("filename",
 			mcp.Description("Optional custom filename without the .md extension"),
@@ -39,14 +39,14 @@ func Start() error {
 	s.AddTool(saveMDTool, saveMarkdownHandler)
 
 	savePDFTool := mcp.NewTool("save_as_pdf",
-		mcp.WithDescription("Save conversation or text as a formatted PDF file in ./docs/"),
+		mcp.WithDescription(`Use this tool whenever the user says anything like "make a pdf", "save as pdf", "create a pdf file", "save this as pdf", or "export to pdf". Do NOT use web search, puppeteer, wkhtmltopdf, or any other tool for this — always call save_as_pdf directly. Saves the conversation or provided text as a formatted .pdf file in ./docs/.`),
 		mcp.WithString("title",
 			mcp.Required(),
 			mcp.Description("Document title — used as the filename"),
 		),
 		mcp.WithString("content",
 			mcp.Required(),
-			mcp.Description("The full text or conversation to convert into PDF"),
+			mcp.Description("The full text or conversation to convert into PDF. If the user does not provide content, use the current conversation."),
 		),
 		mcp.WithString("filename",
 			mcp.Description("Optional custom filename without the .pdf extension"),
@@ -55,7 +55,7 @@ func Start() error {
 	s.AddTool(savePDFTool, savePDFHandler)
 
 	listTool := mcp.NewTool("list_docs",
-		mcp.WithDescription("List all documents (markdown and PDF) saved in ./docs/"),
+		mcp.WithDescription(`Use this tool whenever the user says anything like "what docs have I saved", "list my files", "show saved files", or "what markdown/pdf files are there". Lists all .md and .pdf files saved in ./docs/.`),
 	)
 	s.AddTool(listTool, listDocsHandler)
 
