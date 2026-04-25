@@ -1,0 +1,53 @@
+package main
+
+import (
+	"fmt"
+	"log"
+	"os"
+	"os/exec"
+
+	"github.com/Aakash-Pandit/markdown-generator-mcp/internal/mcpserver"
+)
+
+func main() {
+	if len(os.Args) > 1 && os.Args[1] == "--install" {
+		self, err := os.Executable()
+		if err != nil {
+			log.Fatal(err)
+		}
+		cmd := exec.Command("claude", "mcp", "add", "--scope", "user", "markdown-generator", "--", self)
+		cmd.Stdin = os.Stdin
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		if err := cmd.Run(); err != nil {
+			log.Fatalf("Registration failed: %v\nMake sure Claude Code CLI is installed.", err)
+		}
+		fmt.Println("\nDone! Restart Claude Code, then say 'make a markdown'.")
+		return
+	}
+
+	if len(os.Args) > 1 && os.Args[1] == "--uninstall" {
+		fmt.Println("Uninstalling markdown-generator MCP server...")
+
+		fmt.Println("  Removing MCP registration from Claude Code...")
+		cmd := exec.Command("claude", "mcp", "remove", "--scope", "user", "markdown-generator")
+		cmd.Stdin = os.Stdin
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		if err := cmd.Run(); err != nil {
+			log.Fatalf("  Failed to remove MCP registration: %v\nMake sure Claude Code CLI is installed.", err)
+		}
+
+		fmt.Println("  Removing binary...")
+		self, _ := os.Executable()
+		if err := os.Remove(self); err != nil {
+			fmt.Printf("  Could not remove binary automatically. Run manually: rm %s\n", self)
+		}
+
+		fmt.Println("\nUninstalled successfully. Restart Claude Code.")
+		return
+	}
+	if err := mcpserver.Start(); err != nil {
+		log.Fatal(err)
+	}
+}
