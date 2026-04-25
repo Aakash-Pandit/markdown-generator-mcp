@@ -6,7 +6,7 @@ Works with any source — Claude Code chats, Codex sessions, or any text you pas
 
 ## Install
 
-**Requires:** Go 1.21+, [Claude Code](https://claude.ai/code)
+**Requires:** [Claude Code](https://claude.ai/code), macOS or Linux
 
 ```sh
 curl -sSL https://raw.githubusercontent.com/Aakash-Pandit/markdown-generator-mcp/main/install.sh | sh
@@ -37,7 +37,7 @@ Claude calls these automatically when you ask it to save something.
 ## Uninstall
 
 ```sh
-$(go env GOPATH)/bin/markdown-generator-mcp --uninstall
+markdown-generator-mcp --uninstall
 ```
 
 This removes the MCP registration from Claude Code and deletes the binary. Restart Claude Code after.

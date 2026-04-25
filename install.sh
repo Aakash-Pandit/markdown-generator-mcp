@@ -1,19 +1,60 @@
 #!/bin/sh
 set -e
 
-echo "Installing markdown-generator-mcp..."
+REPO="Aakash-Pandit/markdown-generator-mcp"
+BINARY_NAME="markdown-generator-mcp"
+INSTALL_DIR="/usr/local/bin"
 
-if ! command -v go >/dev/null 2>&1; then
-    echo "Error: Go is required (1.21+). Install from https://go.dev/dl/"
+echo "Installing markdown-generator MCP server..."
+
+# Detect OS
+OS="$(uname -s | tr '[:upper:]' '[:lower:]')"
+case "$OS" in
+  darwin) OS="darwin" ;;
+  linux)  OS="linux" ;;
+  *)
+    echo "Error: Unsupported OS: $OS"
+    echo "Windows users: download the binary manually from https://github.com/$REPO/releases"
     exit 1
+    ;;
+esac
+
+# Detect architecture
+ARCH="$(uname -m)"
+case "$ARCH" in
+  x86_64)  ARCH="amd64" ;;
+  aarch64|arm64) ARCH="arm64" ;;
+  *)
+    echo "Error: Unsupported architecture: $ARCH"
+    exit 1
+    ;;
+esac
+
+# Get latest release version
+echo "  Fetching latest release..."
+LATEST=$(curl -sSf "https://api.github.com/repos/$REPO/releases/latest" \
+  | grep '"tag_name"' | sed 's/.*"tag_name": *"\(.*\)".*/\1/')
+
+if [ -z "$LATEST" ]; then
+  echo "Error: Could not fetch latest release. Check https://github.com/$REPO/releases"
+  exit 1
 fi
 
-go install github.com/Aakash-Pandit/markdown-generator-mcp@latest
+echo "  Downloading $BINARY_NAME $LATEST ($OS/$ARCH)..."
+URL="https://github.com/$REPO/releases/download/$LATEST/${BINARY_NAME}-${OS}-${ARCH}"
+curl -sSfL "$URL" -o "/tmp/$BINARY_NAME"
+chmod +x "/tmp/$BINARY_NAME"
 
-echo "Registering with Claude Code..."
-BINARY="$(go env GOPATH)/bin/markdown-generator-mcp"
-if [ ! -f "$BINARY" ]; then
-    echo "Error: binary not found at $BINARY"
-    exit 1
+# Install binary
+if [ -w "$INSTALL_DIR" ]; then
+  mv "/tmp/$BINARY_NAME" "$INSTALL_DIR/$BINARY_NAME"
+else
+  echo "  Requesting permission to install to $INSTALL_DIR..."
+  sudo mv "/tmp/$BINARY_NAME" "$INSTALL_DIR/$BINARY_NAME"
 fi
-"$BINARY" --install
+
+echo "  Registering with Claude Code..."
+"$INSTALL_DIR/$BINARY_NAME" --install
+
+echo ""
+echo "Installed successfully! Restart Claude Code, then say 'make a markdown'."
