@@ -15,7 +15,7 @@ func main() {
 		if err != nil {
 			log.Fatal(err)
 		}
-		cmd := exec.Command("claude", "mcp", "add", "markdown-generator", "--", self)
+		cmd := exec.Command("claude", "mcp", "add", "--scope", "user", "markdown-generator", "--", self)
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 		if err := cmd.Run(); err != nil {
