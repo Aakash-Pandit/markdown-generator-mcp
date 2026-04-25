@@ -16,6 +16,7 @@ func main() {
 			log.Fatal(err)
 		}
 		cmd := exec.Command("claude", "mcp", "add", "--scope", "user", "markdown-generator", "--", self)
+		cmd.Stdin = os.Stdin
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 		if err := cmd.Run(); err != nil {
@@ -27,6 +28,7 @@ func main() {
 
 	if len(os.Args) > 1 && os.Args[1] == "--uninstall" {
 		cmd := exec.Command("claude", "mcp", "remove", "--scope", "user", "markdown-generator")
+		cmd.Stdin = os.Stdin
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 		if err := cmd.Run(); err != nil {
