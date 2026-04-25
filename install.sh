@@ -11,4 +11,9 @@ fi
 go install github.com/Aakash-Pandit/markdown-generator-mcp@latest
 
 echo "Registering with Claude Code..."
-"$(go env GOPATH)/bin/markdown-generator-mcp" --install
+BINARY="$(go env GOPATH)/bin/markdown-generator-mcp"
+if [ ! -f "$BINARY" ]; then
+    echo "Error: binary not found at $BINARY"
+    exit 1
+fi
+"$BINARY" --install
