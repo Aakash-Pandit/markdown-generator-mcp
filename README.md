@@ -60,13 +60,27 @@ your-project/
 
 ## All Commands
 
+### Markdown
+
 | What you say | What it does |
 |---|---|
-| `make a markdown` | Saves with an auto-generated filename |
-| `save this as <name>` | Saves as `./docs/<name>.md` |
+| `make a markdown` | Saves as `./docs/<auto-name>.md` |
 | `make a markdown called <name>` | Saves as `./docs/<name>.md` |
-| `save this conversation as a doc` | Saves with title as filename |
-| `what markdown files have I saved?` | Lists all `.md` files in `./docs/` |
+| `save this as a markdown` | Saves with title as filename |
+
+### PDF
+
+| What you say | What it does |
+|---|---|
+| `make a pdf` | Saves as `./docs/<auto-name>.pdf` |
+| `make a pdf called <name>` | Saves as `./docs/<name>.pdf` |
+| `save this as a pdf` | Saves with title as filename |
+
+### General
+
+| What you say | What it does |
+|---|---|
+| `what docs have I saved?` | Lists all `.md` and `.pdf` files in `./docs/` |
 
 ---
 

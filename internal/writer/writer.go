@@ -29,7 +29,7 @@ func ListFiles(dir string) ([]string, error) {
 	}
 	var results []string
 	for _, e := range entries {
-		if !e.IsDir() && strings.HasSuffix(e.Name(), ".md") {
+		if !e.IsDir() && (strings.HasSuffix(e.Name(), ".md") || strings.HasSuffix(e.Name(), ".pdf")) {
 			info, _ := e.Info()
 			results = append(results, fmt.Sprintf("%s (%d bytes)", e.Name(), info.Size()))
 		}
