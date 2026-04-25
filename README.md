@@ -37,5 +37,7 @@ Claude calls these automatically when you ask it to save something.
 ## Uninstall
 
 ```sh
-claude mcp remove markdown-generator
+$(go env GOPATH)/bin/markdown-generator-mcp --uninstall
 ```
+
+This removes the MCP registration from Claude Code and deletes the binary. Restart Claude Code after.
