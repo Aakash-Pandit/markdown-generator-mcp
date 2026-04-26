@@ -15,6 +15,22 @@ import (
 	"github.com/Aakash-Pandit/markdown-generator-mcp/internal/writer"
 )
 
+const contentDesc = `The complete conversation transcript from the very first message to this one.
+
+STEP 1 — count: before writing anything, count every Human message in this conversation starting from message #1. Put that number in turn_count.
+
+STEP 2 — write: reproduce ALL turns in order, starting from Human message #1:
+
+**Human:** <exact text>
+
+**Assistant:** <exact text>
+
+Repeat for every turn. Do NOT start from the most recent message. Do NOT summarise.
+
+The server counts the number of **Human:** markers in this field and compares it to turn_count. If they do not match it will reject the request and you must retry with the full conversation.`
+
+const turnCountDesc = `The exact number of Human messages in this conversation from the very first message to now. Count every Human turn starting from #1. The server rejects the request if this does not match the number of **Human:** markers found in content.`
+
 func Start() error {
 	s := server.NewMCPServer(
 		"markdown-generator",
@@ -30,25 +46,11 @@ func Start() error {
 		),
 		mcp.WithString("content",
 			mcp.Required(),
-			mcp.Description(`CRITICAL: Reproduce the ENTIRE conversation verbatim — every Human and Assistant turn from message #1 to right now. Rules:
-1. Start at the very FIRST Human message in this conversation (not the most recent one).
-2. Include EVERY turn in order. If the user sent 3 prompts, all 3 must appear.
-3. Copy each message word-for-word. No summaries, no skipping.
-4. Format every turn exactly as:
-
-**Human:** <exact message text>
-
-**Assistant:** <exact response text>
-
-Example (3-turn conversation):
-**Human:** hello, can you help me?
-**Assistant:** Of course! What do you need?
-**Human:** explain goroutines
-**Assistant:** Goroutines are lightweight threads managed by the Go runtime...
-**Human:** save this conversation as markdown
-**Assistant:** (calls this tool)
-
-If you include only the most recent message the output will be incomplete and wrong.`),
+			mcp.Description(contentDesc),
+		),
+		mcp.WithNumber("turn_count",
+			mcp.Required(),
+			mcp.Description(turnCountDesc),
 		),
 		mcp.WithString("filename",
 			mcp.Description("Optional custom filename without the .md extension"),
@@ -64,25 +66,11 @@ If you include only the most recent message the output will be incomplete and wr
 		),
 		mcp.WithString("content",
 			mcp.Required(),
-			mcp.Description(`CRITICAL: Reproduce the ENTIRE conversation verbatim — every Human and Assistant turn from message #1 to right now. Rules:
-1. Start at the very FIRST Human message in this conversation (not the most recent one).
-2. Include EVERY turn in order. If the user sent 3 prompts, all 3 must appear.
-3. Copy each message word-for-word. No summaries, no skipping.
-4. Format every turn exactly as:
-
-**Human:** <exact message text>
-
-**Assistant:** <exact response text>
-
-Example (3-turn conversation):
-**Human:** hello, can you help me?
-**Assistant:** Of course! What do you need?
-**Human:** explain goroutines
-**Assistant:** Goroutines are lightweight threads managed by the Go runtime...
-**Human:** save this conversation as pdf
-**Assistant:** (calls this tool)
-
-If you include only the most recent message the output will be incomplete and wrong.`),
+			mcp.Description(contentDesc),
+		),
+		mcp.WithNumber("turn_count",
+			mcp.Required(),
+			mcp.Description(turnCountDesc),
 		),
 		mcp.WithString("filename",
 			mcp.Description("Optional custom filename without the .pdf extension"),
@@ -98,13 +86,32 @@ If you include only the most recent message the output will be incomplete and wr
 	return server.NewStdioServer(s).Listen(context.Background(), os.Stdin, os.Stdout)
 }
 
+func validateConversation(content string, turnCount int) error {
+	if turnCount <= 0 {
+		return nil
+	}
+	found := strings.Count(content, "**Human:**")
+	if found < turnCount {
+		return fmt.Errorf(
+			"incomplete conversation: turn_count is %d but content contains only %d **Human:** marker(s). "+
+				"Retry and include ALL Human and Assistant turns starting from message #1",
+			turnCount, found,
+		)
+	}
+	return nil
+}
+
 func saveMarkdownHandler(ctx context.Context, req mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 	title := req.GetString("title", "")
 	content := req.GetString("content", "")
 	filename := req.GetString("filename", "")
+	turnCount := int(req.GetFloat("turn_count", 0))
 
 	if title == "" || content == "" {
 		return mcp.NewToolResultError("title and content are required"), nil
+	}
+	if err := validateConversation(content, turnCount); err != nil {
+		return mcp.NewToolResultError(err.Error()), nil
 	}
 
 	doc := parser.Parse(content, title)
@@ -121,9 +128,13 @@ func savePDFHandler(ctx context.Context, req mcp.CallToolRequest) (*mcp.CallTool
 	title := req.GetString("title", "")
 	content := req.GetString("content", "")
 	filename := req.GetString("filename", "")
+	turnCount := int(req.GetFloat("turn_count", 0))
 
 	if title == "" || content == "" {
 		return mcp.NewToolResultError("title and content are required"), nil
+	}
+	if err := validateConversation(content, turnCount); err != nil {
+		return mcp.NewToolResultError(err.Error()), nil
 	}
 
 	doc := parser.Parse(content, title)
