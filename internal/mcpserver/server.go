@@ -30,13 +30,25 @@ func Start() error {
 		),
 		mcp.WithString("content",
 			mcp.Required(),
-			mcp.Description(`The full text or conversation to convert into Markdown. IMPORTANT: When the user asks to save the conversation or does not specify content, you MUST include ALL messages from the ENTIRE current conversation — every single Human and Assistant turn from the very first message up to and including this current request. Format each turn as:
+			mcp.Description(`CRITICAL: Reproduce the ENTIRE conversation verbatim — every Human and Assistant turn from message #1 to right now. Rules:
+1. Start at the very FIRST Human message in this conversation (not the most recent one).
+2. Include EVERY turn in order. If the user sent 3 prompts, all 3 must appear.
+3. Copy each message word-for-word. No summaries, no skipping.
+4. Format every turn exactly as:
 
-**Human:** <message text>
+**Human:** <exact message text>
 
-**Assistant:** <message text>
+**Assistant:** <exact response text>
 
-Include code blocks, tool outputs, lists, and all other content exactly as they appeared. Do not summarize, truncate, or skip any turns. Capture the complete context window.`),
+Example (3-turn conversation):
+**Human:** hello, can you help me?
+**Assistant:** Of course! What do you need?
+**Human:** explain goroutines
+**Assistant:** Goroutines are lightweight threads managed by the Go runtime...
+**Human:** save this conversation as markdown
+**Assistant:** (calls this tool)
+
+If you include only the most recent message the output will be incomplete and wrong.`),
 		),
 		mcp.WithString("filename",
 			mcp.Description("Optional custom filename without the .md extension"),
@@ -52,13 +64,25 @@ Include code blocks, tool outputs, lists, and all other content exactly as they 
 		),
 		mcp.WithString("content",
 			mcp.Required(),
-			mcp.Description(`The full text or conversation to convert into PDF. IMPORTANT: When the user asks to save the conversation or does not specify content, you MUST include ALL messages from the ENTIRE current conversation — every single Human and Assistant turn from the very first message up to and including this current request. Format each turn as:
+			mcp.Description(`CRITICAL: Reproduce the ENTIRE conversation verbatim — every Human and Assistant turn from message #1 to right now. Rules:
+1. Start at the very FIRST Human message in this conversation (not the most recent one).
+2. Include EVERY turn in order. If the user sent 3 prompts, all 3 must appear.
+3. Copy each message word-for-word. No summaries, no skipping.
+4. Format every turn exactly as:
 
-**Human:** <message text>
+**Human:** <exact message text>
 
-**Assistant:** <message text>
+**Assistant:** <exact response text>
 
-Include code blocks, tool outputs, lists, and all other content exactly as they appeared. Do not summarize, truncate, or skip any turns. Capture the complete context window.`),
+Example (3-turn conversation):
+**Human:** hello, can you help me?
+**Assistant:** Of course! What do you need?
+**Human:** explain goroutines
+**Assistant:** Goroutines are lightweight threads managed by the Go runtime...
+**Human:** save this conversation as pdf
+**Assistant:** (calls this tool)
+
+If you include only the most recent message the output will be incomplete and wrong.`),
 		),
 		mcp.WithString("filename",
 			mcp.Description("Optional custom filename without the .pdf extension"),
