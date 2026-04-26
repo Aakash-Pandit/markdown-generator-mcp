@@ -30,7 +30,13 @@ func Start() error {
 		),
 		mcp.WithString("content",
 			mcp.Required(),
-			mcp.Description("The full text or conversation to convert into Markdown. If the user does not provide content, use the current conversation."),
+			mcp.Description(`The full text or conversation to convert into Markdown. IMPORTANT: When the user asks to save the conversation or does not specify content, you MUST include ALL messages from the ENTIRE current conversation — every single Human and Assistant turn from the very first message up to and including this current request. Format each turn as:
+
+**Human:** <message text>
+
+**Assistant:** <message text>
+
+Include code blocks, tool outputs, lists, and all other content exactly as they appeared. Do not summarize, truncate, or skip any turns. Capture the complete context window.`),
 		),
 		mcp.WithString("filename",
 			mcp.Description("Optional custom filename without the .md extension"),
@@ -46,7 +52,13 @@ func Start() error {
 		),
 		mcp.WithString("content",
 			mcp.Required(),
-			mcp.Description("The full text or conversation to convert into PDF. If the user does not provide content, use the current conversation."),
+			mcp.Description(`The full text or conversation to convert into PDF. IMPORTANT: When the user asks to save the conversation or does not specify content, you MUST include ALL messages from the ENTIRE current conversation — every single Human and Assistant turn from the very first message up to and including this current request. Format each turn as:
+
+**Human:** <message text>
+
+**Assistant:** <message text>
+
+Include code blocks, tool outputs, lists, and all other content exactly as they appeared. Do not summarize, truncate, or skip any turns. Capture the complete context window.`),
 		),
 		mcp.WithString("filename",
 			mcp.Description("Optional custom filename without the .pdf extension"),
