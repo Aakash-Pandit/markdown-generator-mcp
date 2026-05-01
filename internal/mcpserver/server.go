@@ -37,9 +37,10 @@ RULES:
 - Start from the FIRST message, not the most recent
 - Include EVERY Human and Assistant turn without skipping any
 - Do NOT summarise any turn
-- The server requires turn_count to EXACTLY match the number of **Human:** markers — too few AND too many both cause rejection and a mandatory retry`
+- The current "save as markdown" request turn may be omitted from content — that is the only permitted difference
+- turn_count must equal either the number of **Human:** markers in content, or that number plus 1 (for the omitted current request)`
 
-const turnCountDesc = `The TOTAL number of Human messages in this entire conversation from message #1 to now. Must be the EXACT count — not just recent turns. The server rejects the request if this number does not exactly match the number of **Human:** markers in content (both over-count and under-count are rejected).`
+const turnCountDesc = `The TOTAL number of Human messages in this entire conversation from message #1 to now, INCLUDING the current "save as markdown" request. Must be the exact total count — not just recent turns. The server accepts turn_count equal to N or N+1 where N is the number of **Human:** markers in content (the +1 accounts for the current request being omitted from content).`
 
 func Start() error {
 	s := server.NewMCPServer(
@@ -101,10 +102,11 @@ func validateConversation(content string, turnCount int) error {
 		return nil
 	}
 	found := strings.Count(content, "**Human:**")
-	if found != turnCount {
+	if found != turnCount && found != turnCount-1 {
 		return fmt.Errorf(
 			"conversation mismatch: turn_count is %d but content contains %d **Human:** marker(s). "+
-				"These must match exactly. Retry and include ALL Human and Assistant turns from message #1 to now, without skipping any",
+				"Retry and include ALL Human and Assistant turns from message #1. "+
+				"The current 'save as markdown' request may be omitted from content (turn_count can be N or N-1 where N is markers found)",
 			turnCount, found,
 		)
 	}
