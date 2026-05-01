@@ -15,21 +15,31 @@ import (
 	"github.com/Aakash-Pandit/markdown-generator-mcp/internal/writer"
 )
 
-const contentDesc = `The complete conversation transcript from the very first message to this one.
+const contentDesc = `The COMPLETE conversation transcript — every single turn from message #1 to now.
 
-STEP 1 — count: before writing anything, count every Human message in this conversation starting from message #1. Put that number in turn_count.
+WARNING: Including only the most recent exchange will cause the markdown to contain only the last answer. The user wants the FULL history.
 
-STEP 2 — write: reproduce ALL turns in order, starting from Human message #1:
+STEP 1 — count: count EVERY Human message in this entire conversation from the very first one. Set turn_count to that total. Do NOT count only recent messages.
 
-**Human:** <exact text>
+STEP 2 — write ALL turns in chronological order starting from Human message #1:
 
-**Assistant:** <exact text>
+**Human:** <exact text of turn 1>
 
-Repeat for every turn. Do NOT start from the most recent message. Do NOT summarise.
+**Assistant:** <exact text of turn 1>
 
-The server counts the number of **Human:** markers in this field and compares it to turn_count. If they do not match it will reject the request and you must retry with the full conversation.`
+**Human:** <exact text of turn 2>
 
-const turnCountDesc = `The exact number of Human messages in this conversation from the very first message to now. Count every Human turn starting from #1. The server rejects the request if this does not match the number of **Human:** markers found in content.`
+**Assistant:** <exact text of turn 2>
+
+... and so on for EVERY turn, including this one.
+
+RULES:
+- Start from the FIRST message, not the most recent
+- Include EVERY Human and Assistant turn without skipping any
+- Do NOT summarise any turn
+- The server requires turn_count to EXACTLY match the number of **Human:** markers — too few AND too many both cause rejection and a mandatory retry`
+
+const turnCountDesc = `The TOTAL number of Human messages in this entire conversation from message #1 to now. Must be the EXACT count — not just recent turns. The server rejects the request if this number does not exactly match the number of **Human:** markers in content (both over-count and under-count are rejected).`
 
 func Start() error {
 	s := server.NewMCPServer(
@@ -91,10 +101,10 @@ func validateConversation(content string, turnCount int) error {
 		return nil
 	}
 	found := strings.Count(content, "**Human:**")
-	if found < turnCount {
+	if found != turnCount {
 		return fmt.Errorf(
-			"incomplete conversation: turn_count is %d but content contains only %d **Human:** marker(s). "+
-				"Retry and include ALL Human and Assistant turns starting from message #1",
+			"conversation mismatch: turn_count is %d but content contains %d **Human:** marker(s). "+
+				"These must match exactly. Retry and include ALL Human and Assistant turns from message #1 to now, without skipping any",
 			turnCount, found,
 		)
 	}
